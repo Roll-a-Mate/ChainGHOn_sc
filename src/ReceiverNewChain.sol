@@ -1,23 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-/**
-                       ______                __
-   ____ _____ ___     / ____/___ _____ ___  / /
-  / __ `/ __ `__ \   / /_  / __ `/ __ `__ \/ / 
- / /_/ / / / / / /  / __/ / /_/ / / / / / /_/  
- \__, /_/ /_/ /_/  /_/    \__,_/_/ /_/ /_(_)   
-/____/                                         
-   ___          _                 
-  / _ \___ ____(_)__ _  _____ ____
- / , _/ -_) __/ / -_) |/ / -_) __/
-/_/|_|\__/\__/_/\__/|___/\__/_/                                               
- *  @title Original Chain gm Fam! contract deployer
- *  @author jistro.eth && Ariutokintumi.eth
- *  @dev This contract is used to receive the calls from the original chain
- *       by chainlink's CCIP and send it to the gmFam contract
- */
-
 import { WrappedGHO } from "./WrappedGHO.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import { CCIPReceiver } from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
