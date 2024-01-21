@@ -16,7 +16,6 @@ contract WrappedGHO is ERC20, ERC20Burnable, AccessControl, ERC20Permit {
     struct metadataTokenMint {
         address ownerOfTokens;
         bool canMintToken;
-        string signature;
         uint256 cuantityOfTokens;
     }
 
@@ -55,12 +54,12 @@ contract WrappedGHO is ERC20, ERC20Burnable, AccessControl, ERC20Permit {
         }
         uint256 amount = mapTokenMint[to].cuantityOfTokens;
         _mint(to, amount);
+        mapTokenMint[to].canMintToken = false;
     }
 
-    function ccipSetMint(address _owner, uint256 _cuantityOfTokens, string memory _signature) public onlyCCIP {
+    function ccipSetMint(address _owner, uint256 _cuantityOfTokens) public onlyCCIP {
         mapTokenMint[_owner].ownerOfTokens = _owner;
         mapTokenMint[_owner].canMintToken = true;
-        mapTokenMint[_owner].signature = _signature;
         mapTokenMint[_owner].cuantityOfTokens = _cuantityOfTokens;
     }
 }

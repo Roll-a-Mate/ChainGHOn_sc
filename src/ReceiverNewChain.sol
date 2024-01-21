@@ -14,15 +14,13 @@ contract ReceiverNewChain is CCIPReceiver, DecodeMsgSig, Ownable  {
 
     WrappedGHO GHOw;
     
-    address TreasuryAndWrapperOriginalChainAddress;
+    address ChainGHOnEthereumAddress;
     uint64 sourceChainId;
-    bool isFullySetup = false;
-
     modifier checkIfIsSenderIsTreasuryAndWrapper(
         address _sender, 
         uint64 _chainId
     ) {
-        if(_sender != TreasuryAndWrapperOriginalChainAddress || _chainId != sourceChainId) {
+        if(_sender != ChainGHOnEthereumAddress || _chainId != sourceChainId) {
             revert NotSender();
         }
         _;
@@ -36,16 +34,12 @@ contract ReceiverNewChain is CCIPReceiver, DecodeMsgSig, Ownable  {
         GHOw = WrappedGHO(_GHOwAddress);
     }
 
-    function setupTreasuryAndWrapperAddressOriginalChain(
-        address _TreasuryAndWrapperOriginalChainAddress,
+    function setupChainGHOnContract(
+        address _ChainGHOnEthereumAddress,
         uint64 _sourceChainId
     ) external onlyOwner {
-        if(isFullySetup) {
-            revert SetupAlreadyDone();
-        }
-        TreasuryAndWrapperOriginalChainAddress = _TreasuryAndWrapperOriginalChainAddress;
+        ChainGHOnEthereumAddress = _ChainGHOnEthereumAddress;
         sourceChainId = _sourceChainId;
-        isFullySetup = true;
     }
 
    function _ccipReceive(
@@ -59,8 +53,7 @@ contract ReceiverNewChain is CCIPReceiver, DecodeMsgSig, Ownable  {
         override
     {   
         (
-            string [] memory dataForVariables, 
-            uint256 whereIsSignedMetadata
+            string [] memory dataForVariables,
         ) = decodeSignatureMsgToString("=",",",message.data,2);
         
         address ownerOfTokens = convertStringToAddress(dataForVariables[0]);
@@ -69,16 +62,11 @@ contract ReceiverNewChain is CCIPReceiver, DecodeMsgSig, Ownable  {
         
         GHOw.ccipSetMint(
             ownerOfTokens, 
-            numberTokens,
-            dataForVariables[whereIsSignedMetadata]
+            numberTokens
         );
     }
 
     function seeWhoIsTheSender() public view returns(address, uint64) {
-        return (TreasuryAndWrapperOriginalChainAddress, sourceChainId);
-    }
-
-    function isReceiverFullySetup() public view returns(bool) {
-        return isFullySetup;
+        return (ChainGHOnEthereumAddress, sourceChainId);
     }
 }

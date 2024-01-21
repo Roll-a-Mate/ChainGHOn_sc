@@ -8,9 +8,6 @@ import { ChainGHOn_Ethereum } from "../src/ChainGHOn_Ethereum.sol";
 
 contract DeployProtocol is Script {
 
-    address ghoToken = address(0);
-    address aavePoolProxy = address(0);
-    address wrappedETH = address(0);
 
     address adminAddress = 0xF11f8301C76F46733d855ac767BE741FFA9243Bd;
 
@@ -22,7 +19,9 @@ contract DeployProtocol is Script {
             console2.log("deployin in ETH sepolia");
 
             ChainGHOn_Ethereum chainGHOn_Ethereum = new ChainGHOn_Ethereum(
-                adminAddress
+                adminAddress,
+                0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59,
+                0x779877A7B0D9E8603169DdbD7836e478b4624789
             );
 
             console2.log("ChainGHOn_Ethereum deployed at address: ", address(chainGHOn_Ethereum));
