@@ -7,7 +7,7 @@ import { CCIPReceiver } from "@chainlink/contracts-ccip/src/v0.8/ccip/applicatio
 import { Client } from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import { DecodeMsgSig } from "./utils/DecodeMsgSig.sol";
 
-contract ReceiverNewChain is CCIPReceiver, DecodeMsgSig, Ownable  {
+contract Receiver is CCIPReceiver, DecodeMsgSig, Ownable  {
     error SetupAlreadyDone();
     error NotFullySetup();
     error NotSender();

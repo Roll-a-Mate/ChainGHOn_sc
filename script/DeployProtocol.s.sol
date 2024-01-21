@@ -5,6 +5,9 @@ import {Script, console2} from "forge-std/Script.sol";
 
 import { ChainGHOn } from "../src/ChainGHOn.sol";
 
+import {WrappedGHO} from "../src/WrappedGHO.sol";
+import {Receiver} from "../src/Receiver.sol";
+
 
 contract DeployProtocol is Script {
 
@@ -24,11 +27,18 @@ contract DeployProtocol is Script {
                 0x779877A7B0D9E8603169DdbD7836e478b4624789
             );
 
-            console2.log("ChainGHOn_Ethereum deployed at address: ", address(chainGHOn));
+            console2.log("ChainGHOn deployed at address: ", address(chainGHOn));
 
         } else if (block.chainid ==  43113){ //if is fuji avax
             console2.log("deployin in AVAX fuji");
-            revert();
+            WrappedGHO wrappedGHO = new WrappedGHO(adminAddress);
+            Receiver receiver = new Receiver(
+                adminAddress,
+                0xF694E193200268f9a4868e4Aa017A0118C9a8177,
+                payable(address(wrappedGHO))
+            );
+            console2.log("WrappedGHO deployed at address: ", address(wrappedGHO));
+            console2.log("Receiver deployed at address: ", address(receiver));
         } else {
             console2.log("Error: chain not supported in the protocol");
             revert();
