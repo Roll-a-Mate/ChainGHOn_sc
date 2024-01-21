@@ -9,3 +9,5 @@
 [https://testnet.snowtrace.io/address/0x8f60ab69c721aafa7126b41c8b4067d13dae0b6d](https://testnet.snowtrace.io/address/0x8f60ab69c721aafa7126b41c8b4067d13dae0b6d)
 
 ![image](./graph1.jpg)
+
+[Check presentation](./ChainGHOn!.pdf)
