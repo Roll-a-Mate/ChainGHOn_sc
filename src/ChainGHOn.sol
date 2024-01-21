@@ -80,7 +80,7 @@ contract ChainGHOn is Ownable, StringConverter {
         if (_amount == 0) {
             revert();
         }
-        IERC20(USDC).approve(address(this), _amount);
+        IERC20(USDC).approve(address(aavePoolProxy), _amount);
         IPool(aavePoolProxy).supply(USDC, _amount, address(this), 0);
         collateralValueInWETH[msg.sender] += _amount;
         emit CollateralDeposit(msg.sender, _amount, collateralValueInWETH[msg.sender]);
@@ -95,20 +95,18 @@ contract ChainGHOn is Ownable, StringConverter {
         if (_amount == 0 || collateralValueInWETH[msg.sender] < _amount) {
             revert();
         }
-        interfaceDebtToken.approveDelegation(address(this), _amount);
+       
         IPool(aavePoolProxy).borrow(ghoToken, _amount, 1, 0, address(this));
         totalOfGHOMinted[msg.sender] += _amount;
         bridgeMint(msg.sender, _amount);
         emit MintedGHO(msg.sender, _amount, totalOfGHOMinted[msg.sender]);
     }
 
-    function mintAndDelegateGHO(uint256 _amount, address sender) public {
+    function delegateGHO(uint256 _amount, address sender) public {
         if (_amount <= 0 || collateralValueInWETH[sender] < _amount) {
             revert();
         }
         interfaceDebtToken.approveDelegation(address(this), _amount);
-        IPool(aavePoolProxy).borrow(ghoToken, _amount, 1, 0, address(this));
-        totalOfGHOMintedByDelegate[sender][msg.sender] += _amount;
         bridgeMint(sender, _amount);
         emit MintedGHOWithDelegate(sender, _amount, msg.sender, totalOfGHOMintedByDelegate[sender][msg.sender]);
     }
