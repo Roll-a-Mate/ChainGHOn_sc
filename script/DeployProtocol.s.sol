@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {Script, console2} from "forge-std/Script.sol";
 
-import { ChainGHOn_Ethereum } from "../src/ChainGHOn_Ethereum.sol";
+import { ChainGHOn } from "../src/ChainGHOn.sol";
 
 
 contract DeployProtocol is Script {
@@ -18,13 +18,13 @@ contract DeployProtocol is Script {
         if (block.chainid == 11155111){ //if is sepolia eth
             console2.log("deployin in ETH sepolia");
 
-            ChainGHOn_Ethereum chainGHOn_Ethereum = new ChainGHOn_Ethereum(
+            ChainGHOn chainGHOn = new ChainGHOn(
                 adminAddress,
                 0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59,
                 0x779877A7B0D9E8603169DdbD7836e478b4624789
             );
 
-            console2.log("ChainGHOn_Ethereum deployed at address: ", address(chainGHOn_Ethereum));
+            console2.log("ChainGHOn_Ethereum deployed at address: ", address(chainGHOn));
 
         } else if (block.chainid ==  43113){ //if is fuji avax
             console2.log("deployin in AVAX fuji");

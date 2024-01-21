@@ -8,6 +8,7 @@ import {IPool} from "@aave/core-v3/contracts/interfaces/IPool.sol";
 import {IPriceOracle} from "@aave/core-v3/contracts/interfaces/IPriceOracle.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./utils/IspTokenDebt.sol";
 
 import { LinkTokenInterface } from "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import { IRouterClient } from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
@@ -15,7 +16,7 @@ import { Client } from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client
 
 import { StringConverter } from "./utils/StringConverter.sol";
 
-contract ChainGHOn_Ethereum is Ownable, StringConverter {
+contract ChainGHOn is Ownable, StringConverter {
 
     address constant ghoToken = 0xc4bF5CbDaBE595361438F8c6a187bDc330539c60;
     address constant aavePoolProxy = 0x0562453c3DAFBB5e625483af58f4E6D668c44e19;
@@ -32,6 +33,8 @@ contract ChainGHOn_Ethereum is Ownable, StringConverter {
 
     uint64 destinationChainSelector;
     address AVAXReceiverContractAddress = address(0);
+
+    IspTokenDebt interfaceDebtToken = IspTokenDebt(USDC);
 
     event CollateralDeposit(
         address indexed sender, 
@@ -70,64 +73,55 @@ contract ChainGHOn_Ethereum is Ownable, StringConverter {
         destinationChainSelector = _destinationChainSelector;
     }
 
-    /**
-     * @dev Deposits wrapped ETH (WETH) into the contract to be used as collateral. 
-     * @param _amount The amount of wrapped ETH (WETH) to deposit in wei into the contract.
-     */
     function depositCollateral(uint256 _amount)
         external
     {
-        //solo wrapped eth
-        //require(_amount > 0, "Amount Error");
+
         if (_amount == 0) {
             revert();
         }
         IERC20(USDC).approve(address(this), _amount);
-        //IERC20(USDC).transferFrom(msg.sender, address(this), _amount);
         IPool(aavePoolProxy).supply(USDC, _amount, address(this), 0);
         collateralValueInWETH[msg.sender] += _amount;
         emit CollateralDeposit(msg.sender, _amount, collateralValueInWETH[msg.sender]);
     }
-    /*
+    
     function withdrawCollateral(address _sender, uint256 _amount) public onlyOwner {
-        // we need get the collateral value
-        //require(_asset = asset, "Asset error");
         IPool(aavePoolProxy).withdraw(USDC, _amount, _sender);
         emit Withdrawal(_sender, _amount, collateralValueInWETH[_sender]);
     }
 
-    function mintGHO(uint256 _amount, address sender) public {
-        //ver que el amount sea mayor a 0 y que tenga el collateral necesario para mintear(borrow)
-        if (_amount == 0 || collateralValueInWETH[sender] < _amount) {
+    function mintGHO(uint256 _amount) public {
+        if (_amount == 0 || collateralValueInWETH[msg.sender] < _amount) {
             revert();
         }
+        interfaceDebtToken.approveDelegation(address(this), _amount);
         IPool(aavePoolProxy).borrow(ghoToken, _amount, 1, 0, address(this));
-        totalOfGHOMinted[sender] += _amount;
-        emit MintedGHO(sender, _amount, totalOfGHOMinted[sender]);
+        totalOfGHOMinted[msg.sender] += _amount;
+        bridgeMint(msg.sender, _amount);
+        emit MintedGHO(msg.sender, _amount, totalOfGHOMinted[msg.sender]);
     }
 
     function mintAndDelegateGHO(uint256 _amount, address sender) public {
-        //ver que el amount sea mayor a 0 y que tenga el collateral necesario para mintear(borrow)
         if (_amount <= 0 || collateralValueInWETH[sender] < _amount) {
             revert();
         }
+        interfaceDebtToken.approveDelegation(address(this), _amount);
         IPool(aavePoolProxy).borrow(ghoToken, _amount, 1, 0, address(this));
         totalOfGHOMintedByDelegate[sender][msg.sender] += _amount;
+        bridgeMint(sender, _amount);
         emit MintedGHOWithDelegate(sender, _amount, msg.sender, totalOfGHOMintedByDelegate[sender][msg.sender]);
     }
 
-    function repayForGHO(uint256 _amount, address sender) public returns (uint256) {
-        // here we need to make the validation of the collateral value from signature/merkle tree
-        //require(_amount > 0, "Amount Error");
+    function repayForGHO(uint256 _amount, address sender) public {
         if (_amount <= 0) {
             revert();
         }
-        ERC20(ghoToken).transferFrom(msg.sender, address(this), _amount);
+        IERC20(ghoToken).transferFrom(msg.sender, address(this), _amount);
         IPool(aavePoolProxy).repay(ghoToken, _amount, 2, sender);
-    }*/
+    }
 
-
-    function passMint(address _ownerTokens, uint256 numberOfTokens) private {
+    function bridgeMint(address _ownerTokens, uint256 numberOfTokens) private {
 
 
         string memory dataToSend = string(
