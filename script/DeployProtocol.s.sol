@@ -12,7 +12,7 @@ import {Receiver} from "../src/Receiver.sol";
 contract DeployProtocol is Script {
 
 
-    address adminAddress = 0xf8b414eFD8CB72097edAb449CeAd5dB10Fc12d99;
+    address adminAddress = 0xF11f8301C76F46733d855ac767BE741FFA9243Bd;
 
 
     function run() public {
@@ -22,9 +22,7 @@ contract DeployProtocol is Script {
             console2.log("deployin in ETH sepolia");
 
             ChainGHOn chainGHOn = new ChainGHOn(
-                adminAddress,
-                0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59,
-                0x779877A7B0D9E8603169DdbD7836e478b4624789
+                adminAddress
             );
 
             console2.log("ChainGHOn deployed at address: ", address(chainGHOn));

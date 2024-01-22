@@ -40,12 +40,12 @@ MATIC_MUMBAI_TESTNET_ARGS := --rpc-url $(RPC_URL_MATIC_MUMBAI) --private-key $(P
 compile:
 	forge compile
 
-deployInEthTest:
+deployEth:
 	@echo "██████████████████████████████░Deploying in Eth testnet░███████████████████████████"
 	@forge script script/DeployProtocol.s.sol:DeployProtocol $(ETH_SEPOLIA_TESTNET_ARGS)
 	@echo "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
 	@echo "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
-deployInAvaxTest:
+deployAvax:
 	@echo "██████████████████████████████░Deploying in Avax testnet░██████████████████████████"
 	@forge script script/DeployProtocol.s.sol:DeployProtocol $(AVAX_FUJI_TESTNET_ARGS)
 	@echo "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"

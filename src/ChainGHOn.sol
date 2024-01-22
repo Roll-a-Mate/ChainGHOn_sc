@@ -95,9 +95,9 @@ contract ChainGHOn is Ownable, StringConverter {
             revert();
         }
        
-        IPool(aavePoolProxy).borrow(ghoToken, _amount, 1, 0, address(this));
+        IPool(aavePoolProxy).borrow(ghoToken, _amount, 2, 0, address(this));
         totalOfGHOMinted[msg.sender] += _amount;
-        bridgeMint(msg.sender, _amount);
+        //bridgeMint(msg.sender, _amount);
         emit MintedGHO(msg.sender, _amount, totalOfGHOMinted[msg.sender]);
     }
 
@@ -117,7 +117,7 @@ contract ChainGHOn is Ownable, StringConverter {
         IPool(aavePoolProxy).repay(ghoToken, _amount, 2, sender);
     }
 
-    function bridgeMint(address _ownerTokens, uint256 numberOfTokens) private {
+    /*function bridgeMint(address _ownerTokens, uint256 numberOfTokens) private {
 
 
         string memory dataToSend = string(
@@ -153,8 +153,8 @@ contract ChainGHOn is Ownable, StringConverter {
 
         LinkTokenInterface(i_link).approve(i_router, fees);
 
-        /*bytes32 messageId = */IRouterClient(i_router).ccipSend(destinationChainSelector, message);
-    }
+        /*bytes32 messageId = *//*IRouterClient(i_router).ccipSend(destinationChainSelector, message);
+    }*/
 
     function seeCollateralValue(address _sender) public view returns (uint256) {
         return collateralValueInWETH[_sender];
@@ -168,6 +168,8 @@ contract ChainGHOn is Ownable, StringConverter {
         return totalOfGHOMintedByDelegate[_sender][_delegate];
     }
 
-
+    function seeWhatIsTheAddressOfTheReceiverContract() public view returns (address) {
+        return AVAXReceiverContractAddress;
+    }
     
 }
