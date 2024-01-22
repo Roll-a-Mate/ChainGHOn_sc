@@ -10,7 +10,7 @@ contract WrappedGHO is ERC20, ERC20Burnable, AccessControl, ERC20Permit {
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 public constant CHAINLINK_ROLE = keccak256("CHAINLINK_ROLE");
 
-    bool private _isRecieverContractAddressSet = false;
+    
     address private recieverContractAddress;
 
     struct metadataTokenMint {
@@ -40,12 +40,8 @@ contract WrappedGHO is ERC20, ERC20Burnable, AccessControl, ERC20Permit {
     }
 
     function setReceiverAddress(address _receiverAddress) public onlyOwner {
-        if (_isRecieverContractAddressSet) {
-            revert();
-        }
         _grantRole(CHAINLINK_ROLE, _receiverAddress);
         recieverContractAddress = _receiverAddress;
-        _isRecieverContractAddressSet = true;
     }
 
     function mint(address to) public {

@@ -15,7 +15,10 @@ contract Receiver is CCIPReceiver, DecodeMsgSig, Ownable  {
     WrappedGHO GHOw;
     
     address ChainGHOnEthereumAddress;
-    uint64 sourceChainId;
+
+    // receiving from ethereum sepolia (16015286601757825753)
+    uint64 constant sourceChainId = 16015286601757825753;
+    
     modifier checkIfIsSenderIsTreasuryAndWrapper(
         address _sender, 
         uint64 _chainId
@@ -35,11 +38,9 @@ contract Receiver is CCIPReceiver, DecodeMsgSig, Ownable  {
     }
 
     function setupChainGHOnContract(
-        address _ChainGHOnEthereumAddress,
-        uint64 _sourceChainId
+        address _ChainGHOnEthereumAddress
     ) external onlyOwner {
         ChainGHOnEthereumAddress = _ChainGHOnEthereumAddress;
-        sourceChainId = _sourceChainId;
     }
 
    function _ccipReceive(

@@ -28,10 +28,13 @@ contract ChainGHOn is Ownable, StringConverter {
 
     mapping(address => mapping(address => uint256)) totalOfGHOMintedByDelegate;
 
-    address immutable i_router;
-    address immutable i_link;
+    // for reference go to https://docs.chain.link/ccip/supported-networks/v1_2_0/testnet
+    address constant i_router = 0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59;
+    address constant i_link = 0x779877A7B0D9E8603169DdbD7836e478b4624789;
 
-    uint64 destinationChainSelector;
+    // destinationChainSelector for AVAX fuji is 14767482510784806043
+    uint64 constant destinationChainSelector = 14767482510784806043;
+
     address AVAXReceiverContractAddress = address(0);
                                                     // GHO-StableDebtToken-Aave  
     IspTokenDebt interfaceDebtToken = IspTokenDebt(0xdCA691FB9609aB814E59c62d70783da1c056A9b6);
@@ -59,17 +62,11 @@ contract ChainGHOn is Ownable, StringConverter {
     );
 
     constructor(
-        address initialOwner,
-        address _router,
-        address _linkToken
-    ) Ownable(initialOwner) {
-        i_router = _router;
-        i_link = _linkToken;
-    }
+        address initialOwner
+    ) Ownable(initialOwner) {}
 
-    function setReceiverAvaxAddress(address _receiverAddress, uint64 _destinationChainSelector) public onlyOwner {
+    function setReceiverAvaxAddress(address _receiverAddress) public onlyOwner {
         AVAXReceiverContractAddress = _receiverAddress;
-        destinationChainSelector = _destinationChainSelector;
     }
 
     function depositCollateral(uint256 _amount)
@@ -93,7 +90,7 @@ contract ChainGHOn is Ownable, StringConverter {
         emit Withdrawal(_sender, _amount, collateralValueInWETH[_sender]);
     }
 
-    function mintGHO(uint256 _amount) public {
+    function mintGHOToAvax(uint256 _amount) public {
         if (_amount == 0 || collateralValueInWETH[msg.sender] < _amount) {
             revert();
         }
@@ -109,7 +106,6 @@ contract ChainGHOn is Ownable, StringConverter {
             revert();
         }
         interfaceDebtToken.approveDelegation(address(this), _amount);
-        // bridgeMint(sender, _amount);
         emit GHODelegate(sender, _amount, msg.sender);
     }
 
