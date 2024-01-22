@@ -54,7 +54,11 @@ contract ChainGHOn is Ownable, StringConverter {
         uint256 amount,
         address indexed delegate
     );
-
+    event GHOBrideged(
+        address indexed sender, 
+        uint256 amount,
+        bytes32 indexed msgID
+    );
     event Withdrawal(
         address indexed receiver, 
         uint256 amount, 
@@ -65,7 +69,7 @@ contract ChainGHOn is Ownable, StringConverter {
         address initialOwner
     ) Ownable(initialOwner) {}
 
-    function setReceiverAvaxAddress(address _receiverAddress) public onlyOwner {
+    function _setupReceiverContractInAVAX(address _receiverAddress) public onlyOwner {
         AVAXReceiverContractAddress = _receiverAddress;
     }
 
@@ -99,6 +103,8 @@ contract ChainGHOn is Ownable, StringConverter {
         totalOfGHOMinted[msg.sender] += _amount;
         //bridgeMint(msg.sender, _amount);
         emit MintedGHO(msg.sender, _amount, totalOfGHOMinted[msg.sender]);
+        bytes32 msgID = bridgeMint(msg.sender, _amount);
+        emit GHOBrideged(msg.sender, _amount, msgID);
     }
 
     function delegateGHO(uint256 _amount, address sender) public {
@@ -117,7 +123,7 @@ contract ChainGHOn is Ownable, StringConverter {
         IPool(aavePoolProxy).repay(ghoToken, _amount, 2, sender);
     }
 
-    /*function bridgeMint(address _ownerTokens, uint256 numberOfTokens) private {
+    function bridgeMint(address _ownerTokens, uint256 numberOfTokens) private returns (bytes32){
 
 
         string memory dataToSend = string(
@@ -141,7 +147,7 @@ contract ChainGHOn is Ownable, StringConverter {
             receiver: abi.encode(AVAXReceiverContractAddress),
             data: abi.encodeWithSignature("ccipSetMint(string)", dataToSend),
             tokenAmounts: new Client.EVMTokenAmount[](0),
-            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 600_000, strict: false})),
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 900_000})),
             feeToken: i_link
         });
 
@@ -153,8 +159,10 @@ contract ChainGHOn is Ownable, StringConverter {
 
         LinkTokenInterface(i_link).approve(i_router, fees);
 
-        /*bytes32 messageId = *//*IRouterClient(i_router).ccipSend(destinationChainSelector, message);
-    }*/
+        bytes32 messageId = IRouterClient(i_router).ccipSend(destinationChainSelector, message);
+
+        return messageId;
+    }
 
     function seeCollateralValue(address _sender) public view returns (uint256) {
         return collateralValueInWETH[_sender];

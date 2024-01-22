@@ -39,7 +39,7 @@ contract WrappedGHO is ERC20, ERC20Burnable, AccessControl, ERC20Permit {
         _grantRole(OWNER_ROLE, owner);
     }
 
-    function setReceiverAddress(address _receiverAddress) public onlyOwner {
+    function _setReceiverAddress(address _receiverAddress) public onlyOwner {
         _grantRole(CHAINLINK_ROLE, _receiverAddress);
         recieverContractAddress = _receiverAddress;
     }

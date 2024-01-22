@@ -37,7 +37,7 @@ contract Receiver is CCIPReceiver, DecodeMsgSig, Ownable  {
         GHOw = WrappedGHO(_GHOwAddress);
     }
 
-    function setupChainGHOnContract(
+    function _setupChainGHOnContractInETH(
         address _ChainGHOnEthereumAddress
     ) external onlyOwner {
         ChainGHOnEthereumAddress = _ChainGHOnEthereumAddress;
