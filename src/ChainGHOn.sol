@@ -19,7 +19,7 @@ import { StringConverter } from "./utils/StringConverter.sol";
 contract ChainGHOn is Ownable, StringConverter {
 
     address constant ghoToken = 0xc4bF5CbDaBE595361438F8c6a187bDc330539c60;
-    address constant aavePoolProxy = 0x0562453c3DAFBB5e625483af58f4E6D668c44e19;
+    address constant aavePoolProxy = 0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951;
     address constant USDC = 0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8;
 
     mapping(address => uint256) collateralValueInWETH;
@@ -33,8 +33,8 @@ contract ChainGHOn is Ownable, StringConverter {
 
     uint64 destinationChainSelector;
     address AVAXReceiverContractAddress = address(0);
-
-    IspTokenDebt interfaceDebtToken = IspTokenDebt(USDC);
+                                                    // GHO-StableDebtToken-Aave  
+    IspTokenDebt interfaceDebtToken = IspTokenDebt(0xdCA691FB9609aB814E59c62d70783da1c056A9b6);
 
     event CollateralDeposit(
         address indexed sender, 
@@ -46,11 +46,10 @@ contract ChainGHOn is Ownable, StringConverter {
         uint256 amount, 
         uint256 totalOfGHOMinted
     );
-    event MintedGHOWithDelegate(
+    event GHODelegate(
         address indexed sender, 
         uint256 amount,
-        address indexed delegate,
-        uint256 totalOfGHODelegatedByTheSender
+        address indexed delegate
     );
 
     event Withdrawal(
@@ -80,7 +79,10 @@ contract ChainGHOn is Ownable, StringConverter {
         if (_amount == 0) {
             revert();
         }
+        IERC20(USDC).transferFrom(msg.sender, address(this), _amount);
+
         IERC20(USDC).approve(address(aavePoolProxy), _amount);
+
         IPool(aavePoolProxy).supply(USDC, _amount, address(this), 0);
         collateralValueInWETH[msg.sender] += _amount;
         emit CollateralDeposit(msg.sender, _amount, collateralValueInWETH[msg.sender]);
@@ -107,8 +109,8 @@ contract ChainGHOn is Ownable, StringConverter {
             revert();
         }
         interfaceDebtToken.approveDelegation(address(this), _amount);
-        bridgeMint(sender, _amount);
-        emit MintedGHOWithDelegate(sender, _amount, msg.sender, totalOfGHOMintedByDelegate[sender][msg.sender]);
+        // bridgeMint(sender, _amount);
+        emit GHODelegate(sender, _amount, msg.sender);
     }
 
     function repayForGHO(uint256 _amount, address sender) public {

@@ -12,7 +12,7 @@ import {Receiver} from "../src/Receiver.sol";
 contract DeployProtocol is Script {
 
 
-    address adminAddress = 0xF11f8301C76F46733d855ac767BE741FFA9243Bd;
+    address adminAddress = 0xf8b414eFD8CB72097edAb449CeAd5dB10Fc12d99;
 
 
     function run() public {
